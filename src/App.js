@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import HomePage from "./components/HomePage";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import Map from "./components/Map";
+import DetailsPage from "./components/DetailsPage";
 
 class App extends Component {
   render() {
@@ -10,8 +10,11 @@ class App extends Component {
       <div className="App">
         <Router>
           <div>
-            <Route exact path="/map" component={Map} />
+            <div className="header">
+              <h1>The Beer Hunter</h1>
+            </div>
             <Route exact path="/" component={HomePage} />
+            <Route exact path="/:name" component={DetailsPage} />
           </div>
         </Router>
       </div>

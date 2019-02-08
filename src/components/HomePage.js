@@ -12,20 +12,25 @@ class LandingPage extends PureComponent {
     error: null,
     brouwerijen: null
   };
+
+  setHomeCoords = (lat, lng) => {
+    this.setState({ coords: { lat, lng } });
+  };
+
+  //our main function: it calls google maps distance api and returns the distance and duration into the state
   huntBeer = async postcode => {
     await fetch(
       `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${postcode}&destinations=${addresses}&key=AIzaSyCoPhuanwcuptxhdtQNL7Xn0Osr8uqq-zM`
     )
       .then(res => res.json())
       .then(response => {
-        console.log(response);
         if (
           response.status === "OK" &&
           (!response.origin_addresses[0] ||
             !response.rows[0].elements[0].distance)
         ) {
           this.setState({
-            error: `Sorry.. no address found at "${postcode}"`,
+            error: `Sorry.. no results found from "${postcode}"`,
             brouwerijen: null
           });
         } else if (response.status === "OK") {
@@ -35,9 +40,11 @@ class LandingPage extends PureComponent {
             bieren[i].distance = (elements[i].distance.value / 1000).toFixed(2);
             bieren[i].duration = elements[i].duration.text;
             bieren[i].durationInSeconds = elements[i].duration.value;
+            bieren[i].id = i;
           }
           this.setState({
             error: null,
+            postcode: postcode,
             brouwerijen: bieren.sort((a, b) => {
               return a.durationInSeconds - b.durationInSeconds;
             })
@@ -48,13 +55,22 @@ class LandingPage extends PureComponent {
           });
       });
   };
-
+  //Renders a brewery div with some details and it Links to details page with a map and directions. The Link also passes some state through.
   renderBrouwerij = brouwerij => {
     return (
       <div key={brouwerij.name} className="singleResult">
         <h3>{brouwerij.name}</h3>
         <p>
           {brouwerij.distance}km - {brouwerij.duration}
+          <Link
+            to={{
+              pathname: `/${brouwerij.name}`,
+              state: { brouwerij, coords: this.state.coords }
+            }}
+          >
+            {" "}
+            <span>see directions--></span>
+          </Link>
         </p>
         <p>{brouwerij.address}</p>
         <p>{brouwerij.city}</p>
@@ -71,17 +87,16 @@ class LandingPage extends PureComponent {
   };
   render() {
     const { error, brouwerijen } = this.state;
-    console.log(this.state);
     return (
       <React.Fragment>
-        <div className="header">
-          <h1>The Beer Hunter</h1>
-        </div>
         <InputForm onSubmit={this.huntBeer} />
-        {/* <Map /> */}
-        {/* <Link to="/map">
-          <p>Go To Map</p>
-        </Link> */}
+        {this.state.postcode && (
+          <Map
+            location={this.state.postcode}
+            brouwerijen={this.state.brouwerijen}
+            setCoords={this.setHomeCoords}
+          />
+        )}
         <div className="resultsContainer">
           <div className="results">
             {error && <p className="error">{error}</p>}
