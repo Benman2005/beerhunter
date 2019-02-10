@@ -1,8 +1,10 @@
 import React, { PureComponent } from "react";
 import home from "./home.png";
+import {config} from '../config.js'
 
+const key = config.googleMapsKey
 const script =
-  "https://maps.googleapis.com/maps/api/js?key=AIzaSyCoPhuanwcuptxhdtQNL7Xn0Osr8uqq-zM";
+  `https://maps.googleapis.com/maps/api/js?key=${key}`;
 
 //Google maps api needs to be injected into document to actually render a map
 function loadScript(src) {
@@ -27,7 +29,7 @@ class Map extends PureComponent {
   //takes input from homepage and looks for coordinates for home location, since google distance api doesn't return coordinates.
   getCityCoords = async city => {
     return fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?&key=AIzaSyCoPhuanwcuptxhdtQNL7Xn0Osr8uqq-zM&address=${city}`
+      `https://maps.googleapis.com/maps/api/geocode/json?&key=${key}&address=${city}`
     )
       .then(res => res.json())
       .then(response => {

@@ -1,8 +1,10 @@
 import React, { PureComponent } from "react";
 import home from "./home.png";
+import {config} from '../config.js'
 
+const key = config.googleMapsKey
 const script =
-  "https://maps.googleapis.com/maps/api/js?key=AIzaSyCoPhuanwcuptxhdtQNL7Xn0Osr8uqq-zM";
+  `https://maps.googleapis.com/maps/api/js?key=${key}`;
 
 function loadScript(src) {
   return new Promise((resolve, reject) => {
