@@ -7,23 +7,24 @@ import {config} from '../config.js'
 
 const key = config.googleMapsKey
 const addresses = brouwerijen.breweries
-  .map(brouwerij => brouwerij.address + " " + brouwerij.city)
-  .join("|");
+.map(brouwerij => brouwerij.address + " " + brouwerij.city)
+.join("|");
 class LandingPage extends PureComponent {
   state = {
     error: null,
     brouwerijen: null
   };
-
+  
   setHomeCoords = (lat, lng) => {
     this.setState({ coords: { lat, lng } });
   };
-
+  
   //our main function: it calls google maps distance api and returns the distance and duration into the state
   huntBeer = async postcode => {
-    await fetch(
-      `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${postcode}&destinations=${addresses}&key=${key}`
-    )
+    const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${postcode}&destinations=${addresses}&key=${key}`
+    await fetch(proxyurl+url
+    , {mode: 'cors', })
       .then(res => res.json())
       .then(response => {
         if (
